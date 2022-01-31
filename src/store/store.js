@@ -135,7 +135,7 @@ export const useUserStore = defineStore('userStore', {
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(async panel => {
-                console.log(panel.rows)
+                
                 let newSolar = []
                 await panel.rows.forEach(async elem => {
                     elem.img = this.findInTemplate(elem.template_id).img
@@ -297,6 +297,7 @@ export const useUserStore = defineStore('userStore', {
                             blocksBehind: 3,
                             expireSeconds: 1200,
                         });
+                        console.log(result)
                         this.assets.map(x => x != elem.asset_id)
                     }
                 }
