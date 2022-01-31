@@ -72,7 +72,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"code\":\"defiminingtk\",\"account\":\"${this.name}\",\"symbol\":\"DME\"}`,
+                body: `{\"code\":\"defiminingtk\",\"account\":\"skhri.wam\",\"symbol\":\"DME\"}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(y => this.dme = y[0])
@@ -89,7 +89,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"code\":\"defiminingtk\",\"account\":\"${this.name}\",\"symbol\":\"DMT\"}`,
+                body: `{\"code\":\"defiminingtk\",\"account\":\"skhri.wam\",\"symbol\":\"DMT\"}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(y => this.dmt = y[0])
@@ -106,7 +106,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"users\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"users\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(user => {
@@ -127,7 +127,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"elecsources\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"elecsources\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(panel => {
@@ -199,7 +199,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"rigs\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"rigs\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(panel => {
@@ -271,7 +271,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"workshops\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"workshops\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(panel => {
