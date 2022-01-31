@@ -64,7 +64,7 @@
     </div>
     <footer style="   position:absolute;
    bottom:0;">
-      Created by Azod#9999
+      Created by Azod#9999 (vzfjg.wam)
     </footer>
   </div>
 </template>
