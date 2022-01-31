@@ -154,7 +154,7 @@ export const useUserStore = defineStore('userStore', {
                         });
                         console.log(results)
                     }
-                    if (elem.claim_time * 1000 < Date.now()) {
+                    if ((elem.claim_time-3600) * 1000 < Date.now()) {
                         elem.claim = "Claim !"
                         const result = await this.wax.api.transact({
                             actions: [{
@@ -176,7 +176,7 @@ export const useUserStore = defineStore('userStore', {
                         console.log(result)
                     }
                     else {
-                        const time = new Date(elem.claim_time * 1000 - Date.now())
+                        const time = new Date((elem.claim_time-3600) * 1000 - Date.now())
                         const Hours = time.getHours() > 10 ? time.getHours() : "0" + time.getHours()
                         const Minutes = time.getMinutes() > 10 ? time.getMinutes() : "0" + time.getMinutes()
                         const Seconds = time.getSeconds() > 10 ? time.getSeconds() : "0" + time.getSeconds()
@@ -226,7 +226,7 @@ export const useUserStore = defineStore('userStore', {
                         });
                         console.log(results)
                     }
-                    if (elem.claim_time * 1000 < Date.now()) {
+                    if ((elem.claim_time-3600) * 1000 < Date.now()) {
                         elem.claim = "Claim !"
                         const result = await this.wax.api.transact({
                             actions: [{
@@ -248,7 +248,7 @@ export const useUserStore = defineStore('userStore', {
                         console.log(result)
                     }
                     else {
-                        const time = new Date(elem.claim_time * 1000 - Date.now())
+                        const time = new Date((elem.claim_time-3600) * 1000 - Date.now())
                         const Hours = time.getHours() > 10 ? time.getHours() : "0" + time.getHours()
                         const Minutes = time.getMinutes() > 10 ? time.getMinutes() : "0" + time.getMinutes()
                         const Seconds = time.getSeconds() > 10 ? time.getSeconds() : "0" + time.getSeconds()
@@ -298,7 +298,7 @@ export const useUserStore = defineStore('userStore', {
                         });
                         console.log(results)
                     }
-                    if (elem.claim_time * 1000 < Date.now()) {
+                    if ((elem.claim_time-3600) * 1000 < Date.now()) {
                         elem.claim = "Claim !"
                         const result = await this.wax.api.transact({
                             actions: [{
@@ -319,7 +319,7 @@ export const useUserStore = defineStore('userStore', {
                         console.log(result)
                     }
                     else {
-                        const time = new Date(elem.claim_time * 1000 - Date.now())
+                        const time = new Date((elem.claim_time - 3600) * 1000 - Date.now())
                         const Hours = time.getHours() > 10 ? time.getHours() : "0" + time.getHours()
                         const Minutes = time.getMinutes() > 10 ? time.getMinutes() : "0" + time.getMinutes()
                         const Seconds = time.getSeconds() > 10 ? time.getSeconds() : "0" + time.getSeconds()

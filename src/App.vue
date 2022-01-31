@@ -15,10 +15,12 @@
       </div>
       <hr />
       <div class="solar-panel">
+        <h2>Electricity</h2>
         <split-carousel height="250" arrow-visible="always" display-amount=10>
           <split-carousel-item v-for="item in user.solar" :key="item">
             <img
               :src="'https://ipfs.atomichub.io/ipfs/' + item.img"
+              referrerpolicy="no-referrer"
               style="width: 100%"
             />
             {{ item.name }}
@@ -29,10 +31,12 @@
       </div>
       <hr />
       <div class="rigs">
+        <h2>Rigs</h2>
         <split-carousel height="250" arrow-visible="always" display-amount=10>
           <split-carousel-item v-for="item in user.rigs" :key="item">
             <img
               :src="'https://ipfs.atomichub.io/ipfs/' + item.img"
+              referrerpolicy="no-referrer"
               style="width: 100%"
             />
             {{ item.name }}
@@ -42,11 +46,13 @@
         </split-carousel>
       </div>
       <hr />
-      <div class="rigs">
+      <div class="workshops">
+        <h2>Workshops</h2>
         <split-carousel height="250" arrow-visible="always" display-amount=10>
           <split-carousel-item v-for="item in user.workshops" :key="item">
             <img
               :src="'https://ipfs.atomichub.io/ipfs/' + item.img"
+              referrerpolicy="no-referrer"
               style="width: 100%"
             />
             {{ item.name }}
@@ -56,6 +62,10 @@
         </split-carousel>
       </div>
     </div>
+    <footer style="   position:absolute;
+   bottom:0;">
+      Created by Azod#9999
+    </footer>
   </div>
 </template>
 
