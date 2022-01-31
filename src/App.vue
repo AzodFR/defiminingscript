@@ -19,7 +19,7 @@
         <split-carousel height="250" arrow-visible="always" display-amount=10>
           <split-carousel-item v-for="item in user.solar" :key="item">
             <img
-              :src="'https://ipfs.atomichub.io/ipfs/' + item.img"
+              :src="'https://mypinata.cloud/ipfs/' + item.img"
               referrerpolicy="no-referrer"
               style="width: 100%"
             />
@@ -35,7 +35,7 @@
         <split-carousel height="250" arrow-visible="always" display-amount=10>
           <split-carousel-item v-for="item in user.rigs" :key="item">
             <img
-              :src="'https://ipfs.atomichub.io/ipfs/' + item.img"
+              :src="'https://mypinata.cloud/ipfs/' + item.img"
               referrerpolicy="no-referrer"
               style="width: 100%"
             />
@@ -51,7 +51,7 @@
         <split-carousel height="250" arrow-visible="always" display-amount=10>
           <split-carousel-item v-for="item in user.workshops" :key="item">
             <img
-              :src="'https://ipfs.atomichub.io/ipfs/' + item.img"
+              :src="'https://mypinata.cloud/ipfs/' + item.img"
               referrerpolicy="no-referrer"
               style="width: 100%"
             />
