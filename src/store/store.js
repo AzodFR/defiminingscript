@@ -5,7 +5,7 @@ export const useUserStore = defineStore('userStore', {
     state: () => {
         return {
             wax: new waxjs.WaxJS({
-                rpcEndpoint: "https://wax.greymass.com",
+                rpcEndpoint: "https://api.wax.greeneosio.com",
                 tryAutoLogin: true
             }),
             name: '',
@@ -15,13 +15,14 @@ export const useUserStore = defineStore('userStore', {
             templates: [],
             ig_rss: [],
             dmt: "",
-            dme: ""
+            dme: "",
+            assets: []
         }
     },
     actions: {
         login: async function () {
             this.name = await this.wax.login()
-            this.fetchTemplate()
+            await this.fetchTemplate()
             this.fetchDME()
             this.fetchDMT()
             setInterval(async () => {
@@ -30,7 +31,10 @@ export const useUserStore = defineStore('userStore', {
                 this.fetchWrk()
                 this.fetchUser()
             }, 1000)
-            
+            setInterval(async () => {
+                this.repair()
+                this.claim()
+            }, 2000)
         },
         fetchTemplate: async function () {
             await fetch("https://wax.greymass.com/v1/chain/get_table_rows", {
@@ -72,7 +76,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"code\":\"defiminingtk\",\"account\":\"skhri.wam\",\"symbol\":\"DME\"}`,
+                body: `{\"code\":\"defiminingtk\",\"account\":\"${this.name}\",\"symbol\":\"DME\"}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(y => this.dme = y[0])
@@ -89,7 +93,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"code\":\"defiminingtk\",\"account\":\"skhri.wam\",\"symbol\":\"DMT\"}`,
+                body: `{\"code\":\"defiminingtk\",\"account\":\"${this.name}\",\"symbol\":\"DMT\"}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(y => this.dmt = y[0])
@@ -106,7 +110,7 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"users\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"users\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
             }).then(x => x.json()).then(user => {
@@ -127,59 +131,22 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"elecsources\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"elecsources\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
-            }).then(x => x.json()).then(panel => {
+            }).then(x => x.json()).then(async panel => {
+                console.log(panel.rows)
                 let newSolar = []
-                panel.rows.forEach(async elem => {
+                await panel.rows.forEach(async elem => {
                     elem.img = this.findInTemplate(elem.template_id).img
-                    if (elem.current_durability < elem.durability / 2) {
-                        const results = await this.wax.api.transact({
-                            actions: [{
-                                account: 'defiminingio',
-                                name: 'repairelec',
-                                authorization: [{
-                                    actor: this.wax.userAccount,
-                                    permission: 'active',
-                                }],
-                                data: {
-                                    to: this.wax.userAccount,
-                                    asset_id: elem.asset_id
-                                },
-                            }]
-                        }, {
-                            blocksBehind: 3,
-                            expireSeconds: 1200,
-                        });
-                        console.log(results)
-                    }
-                    if ((elem.claim_time-3600) * 1000 < Date.now()) {
+                    if ((elem.claim_time) * 1000 < (Date.now())) {
                         elem.claim = "Claim !"
-                        const result = await this.wax.api.transact({
-                            actions: [{
-                                account: 'defiminingio',
-                                name: 'claimelec',
-                                authorization: [{
-                                    actor: this.wax.userAccount,
-                                    permission: 'active',
-                                }],
-                                data: {
-                                    to: this.wax.userAccount,
-                                    asset_id: elem.asset_id
-                                },
-                            }]
-                        }, {
-                            blocksBehind: 3,
-                            expireSeconds: 1200,
-                        });
-                        console.log(result)
                     }
                     else {
-                        const time = new Date((elem.claim_time-3600) * 1000 - Date.now())
-                        const Hours = time.getHours() > 10 ? time.getHours() : "0" + time.getHours()
-                        const Minutes = time.getMinutes() > 10 ? time.getMinutes() : "0" + time.getMinutes()
-                        const Seconds = time.getSeconds() > 10 ? time.getSeconds() : "0" + time.getSeconds()
+                        const time = new Date((elem.claim_time) * 1000 - (Date.now()) - 3600000)
+                        const Hours = time.getHours() >= 10 ? time.getHours() : "0" + time.getHours()
+                        const Minutes = time.getMinutes() >= 10 ? time.getMinutes() : "0" + time.getMinutes()
+                        const Seconds = time.getSeconds() >= 10 ? time.getSeconds() : "0" + time.getSeconds()
                         elem.claim = Hours + ":" + Minutes + ":" + Seconds;
                     }
                     newSolar.push(elem)
@@ -199,59 +166,22 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"rigs\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"rigs\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
-            }).then(x => x.json()).then(panel => {
+            }).then(x => x.json()).then(async panel => {
                 let newRigs = []
-                panel.rows.forEach(async elem => {
+                await panel.rows.forEach(async elem => {
                     elem.img = this.findInTemplate(elem.template_id).img
-                    if (elem.current_durability < elem.durability / 2) {
-                        const results = await this.wax.api.transact({
-                            actions: [{
-                                account: 'defiminingio',
-                                name: 'repairrig',
-                                authorization: [{
-                                    actor: this.wax.userAccount,
-                                    permission: 'active',
-                                }],
-                                data: {
-                                    to: this.wax.userAccount,
-                                    asset_id: elem.asset_id
-                                },
-                            }]
-                        }, {
-                            blocksBehind: 3,
-                            expireSeconds: 1200,
-                        });
-                        console.log(results)
-                    }
-                    if ((elem.claim_time-3600) * 1000 < Date.now()) {
+                    if ((elem.claim_time) * 1000 < Date.now()) {
                         elem.claim = "Claim !"
-                        const result = await this.wax.api.transact({
-                            actions: [{
-                                account: 'defiminingio',
-                                name: 'claimrig',
-                                authorization: [{
-                                    actor: this.wax.userAccount,
-                                    permission: 'active',
-                                }],
-                                data: {
-                                    to: this.wax.userAccount,
-                                    asset_id: elem.asset_id
-                                },
-                            }]
-                        }, {
-                            blocksBehind: 3,
-                            expireSeconds: 1200,
-                        });
-                        console.log(result)
+
                     }
                     else {
-                        const time = new Date((elem.claim_time-3600) * 1000 - Date.now())
-                        const Hours = time.getHours() > 10 ? time.getHours() : "0" + time.getHours()
-                        const Minutes = time.getMinutes() > 10 ? time.getMinutes() : "0" + time.getMinutes()
-                        const Seconds = time.getSeconds() > 10 ? time.getSeconds() : "0" + time.getSeconds()
+                        const time = new Date((elem.claim_time) * 1000 - (Date.now()) - 3600000)
+                        const Hours = time.getHours() >= 10 ? time.getHours() : "0" + time.getHours()
+                        const Minutes = time.getMinutes() >= 10 ? time.getMinutes() : "0" + time.getMinutes()
+                        const Seconds = time.getSeconds() >= 10 ? time.getSeconds() : "0" + time.getSeconds()
                         elem.claim = Hours + ":" + Minutes + ":" + Seconds;
                     }
                     newRigs.push(elem)
@@ -271,18 +201,38 @@ export const useUserStore = defineStore('userStore', {
                     "Sec-Fetch-Site": "cross-site",
                 },
                 referrer: "https://thedefimining.io/",
-                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"workshops\",\"table_key\":\"\",\"lower_bound\":\"skhri.wam\",\"upper_bound\":\"skhri.wam\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
+                body: `{\"json\":true,\"code\":\"defiminingio\",\"scope\":\"defiminingio\",\"table\":\"workshops\",\"table_key\":\"\",\"lower_bound\":\"${this.name}\",\"upper_bound\":\"${this.name}\",\"index_position\":2,\"key_type\":\"i64\",\"limit\":\"100\",\"reverse\":false,\"show_payer\":false}`,
                 method: "POST",
                 mode: "cors",
-            }).then(x => x.json()).then(panel => {
+            }).then(x => x.json()).then(async panel => {
                 let newwrk = []
-                panel.rows.forEach(async elem => {
+                await panel.rows.forEach(async elem => {
                     elem.img = this.findInTemplate(elem.template_id).img
-                    if (elem.current_durability < elem.durability / 2) {
-                        const results = await this.wax.api.transact({
+
+                    if ((elem.claim_time) * 1000 < (Date.now())) {
+                        elem.claim = "Claim !"
+                    }
+                    else {
+                        const time = new Date((elem.claim_time) * 1000 - (Date.now()) - 3600000)
+                        const Hours = time.getHours() >= 10 ? time.getHours() : "0" + time.getHours()
+                        const Minutes = time.getMinutes() >= 10 ? time.getMinutes() : "0" + time.getMinutes()
+                        const Seconds = time.getSeconds() >= 10 ? time.getSeconds() : "0" + time.getSeconds()
+                        elem.claim = Hours + ":" + Minutes + ":" + Seconds;
+                    }
+                    newwrk.push(elem)
+                })
+                this.workshops = newwrk;
+            })
+        },
+        claim: async function () {
+            await this.solar.forEach(async elem => {
+                if (elem.claim == "Claim !") {
+                    if (!this.assets.includes(elem.asset_id)) {
+                        this.assets.push(elem.asset_id)
+                        const result = await this.wax.api.transact({
                             actions: [{
                                 account: 'defiminingio',
-                                name: 'repaiws',
+                                name: 'claimelec',
                                 authorization: [{
                                     actor: this.wax.userAccount,
                                     permission: 'active',
@@ -296,10 +246,41 @@ export const useUserStore = defineStore('userStore', {
                             blocksBehind: 3,
                             expireSeconds: 1200,
                         });
-                        console.log(results)
+                        console.log(result)
+                        this.assets.map(x => x != elem.asset_id)
                     }
-                    if ((elem.claim_time-3600) * 1000 < Date.now()) {
-                        elem.claim = "Claim !"
+                }
+            })
+            await this.rigs.forEach(async elem => {
+                if (elem.claim == "Claim !") {
+                    if (!this.assets.includes(elem.asset_id)) {
+                        this.assets.push(elem.asset_id)
+                        const result = await this.wax.api.transact({
+                            actions: [{
+                                account: 'defiminingio',
+                                name: 'claimrig',
+                                authorization: [{
+                                    actor: this.wax.userAccount,
+                                    permission: 'active',
+                                }],
+                                data: {
+                                    to: this.wax.userAccount,
+                                    asset_id: elem.asset_id
+                                },
+                            }]
+                        }, {
+                            blocksBehind: 3,
+                            expireSeconds: 1200,
+                        });
+                        console.log(result)
+                        this.assets.map(x => x != elem.asset_id)
+                    }
+                }
+            })
+            await this.workshops.forEach(async elem => {
+                if (elem.claim == "Claim !") {
+                    if (!this.assets.includes(elem.asset_id)) {
+                        this.assets.push(elem.asset_id)
                         const result = await this.wax.api.transact({
                             actions: [{
                                 account: 'defiminingio',
@@ -316,18 +297,88 @@ export const useUserStore = defineStore('userStore', {
                             blocksBehind: 3,
                             expireSeconds: 1200,
                         });
-                        console.log(result)
+                        this.assets.map(x => x != elem.asset_id)
                     }
-                    else {
-                        const time = new Date((elem.claim_time - 3600) * 1000 - Date.now())
-                        const Hours = time.getHours() > 10 ? time.getHours() : "0" + time.getHours()
-                        const Minutes = time.getMinutes() > 10 ? time.getMinutes() : "0" + time.getMinutes()
-                        const Seconds = time.getSeconds() > 10 ? time.getSeconds() : "0" + time.getSeconds()
-                        elem.claim = Hours + ":" + Minutes + ":" + Seconds;
+                }
+            })
+        },
+        repair: async function () {
+            await this.solar.forEach(async elem => {
+                if (elem.current_durability < elem.durability / 2) {
+                    if (!this.assets.includes(elem.asset_id)) {
+                        this.assets.push(elem.asset_id)
+                        await this.wax.api.transact({
+                            actions: [{
+                                account: 'defiminingio',
+                                name: 'repairelec',
+                                authorization: [{
+                                    actor: this.wax.userAccount,
+                                    permission: 'active',
+                                }],
+                                data: {
+                                    to: this.wax.userAccount,
+                                    asset_id: elem.asset_id
+                                },
+                            }]
+                        }, {
+                            blocksBehind: 3,
+                            expireSeconds: 1200,
+                        });
+
+                        this.assets.map(x => x != elem.asset_id)
                     }
-                    newwrk.push(elem)
-                })
-                this.workshops = newwrk;
+                }
+            })
+            await this.rigs.forEach(async elem => {
+                if (elem.current_durability < elem.durability / 2) {
+                    if (!this.assets.includes(elem.asset_id)) {
+                        this.assets.push(elem.asset_id)
+                        await this.wax.api.transact({
+                            actions: [{
+                                account: 'defiminingio',
+                                name: 'repairrig',
+                                authorization: [{
+                                    actor: this.wax.userAccount,
+                                    permission: 'active',
+                                }],
+                                data: {
+                                    to: this.wax.userAccount,
+                                    asset_id: elem.asset_id
+                                },
+                            }]
+                        }, {
+                            blocksBehind: 3,
+                            expireSeconds: 1200,
+                        });
+
+                        this.assets.map(x => x != elem.asset_id)
+                    }
+                }
+            })
+            await this.workshops.forEach(async elem => {
+                if (elem.current_durability < elem.durability / 2) {
+                    if (!this.assets.includes(elem.asset_id)) {
+                        this.assets.push(elem.asset_id)
+                    await this.wax.api.transact({
+                        actions: [{
+                            account: 'defiminingio',
+                            name: 'repaiws',
+                            authorization: [{
+                                actor: this.wax.userAccount,
+                                permission: 'active',
+                            }],
+                            data: {
+                                to: this.wax.userAccount,
+                                asset_id: elem.asset_id
+                            },
+                        }]
+                    }, {
+                        blocksBehind: 3,
+                        expireSeconds: 1200,
+                    });
+                        this.assets.map(x => x != elem.asset_id)
+                    }
+                }
             })
         }
     }
