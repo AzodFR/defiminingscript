@@ -7,7 +7,13 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "vue": "^3.0.0"
+    "@waxio/waxjs": "^1.0.4",
+    "fetch": "^1.1.0",
+    "pinia": "^2.0.11",
+    "primeicons": "^5.0.0",
+    "primevue": "^3.11.0",
+    "vue": "^3.0.0",
+    "vue-split-carousel": "^2.2.3"
   },
   "devDependencies": {
     "@vue/cli-service": "~4.5.0",
