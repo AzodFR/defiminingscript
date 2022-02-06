@@ -36,7 +36,7 @@ await fetch("https://chain.wax.io/v1/chain/get_account", {
           "Sec-Fetch-Site": "cross-site",
     },
     "referrer": "https://fw.f12key.xyz/",
-    "body": "{\"account_name\":\"vzfjg.wam\"}",
+    "body": `{\"account_name\":\"${this.$store.state.user.name}\"}`,
     "method": "POST",
     "mode": "cors"
 }).then((x) => x.json())
@@ -90,7 +90,7 @@ await fetch("https://chain.wax.io/v1/chain/get_account", {
             if (!this.$store.state.user.logged_asset.includes(elem.asset_id)) {
               this.$store.commit("user/addAsset", elem.asset_id);
               // si elem.claim_type === "DMT" : factor = 0.0304 / 24
-              
+
               if (elem.claim_type === "DMT") {
                 this.$store.commit("user/addProduction", {
                   type: elem.claim_type,

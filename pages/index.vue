@@ -4,7 +4,6 @@
     <Login v-if="name == ''" />
     <div v-else>
       <Interval />
-      <Buffer />
       <Test />
     </div>
     <div class="devinfo">

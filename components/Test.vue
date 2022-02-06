@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Buffer />
     <div class="info-user">
       <div class="login">
         {{ user.name }}
@@ -21,20 +22,20 @@
       <div class="token-info">
         <label class="token-title">Tokens:</label>
         <p class="game-info-t">{{ user.tokens["DMT"] }}</p>
-        <p class="game-info-t">{{ user.tokens["DME"] }}</p>
         <p class="game-info-t">{{ user.tokens["DMC"] }}</p>
+        <p class="game-info-t">{{ user.tokens["DME"] }}</p>
       </div>
       <div class="ingame-info">
         <label class="ingame-title">InGame:</label>
         <p class="game-info">{{ user.ressources["DMT"] }}</p>
-        <p class="game-info">{{ user.ressources["DME"] }}</p>
         <p class="game-info">{{ user.ressources["DMC"] }}</p>
+        <p class="game-info">{{ user.ressources["DME"] }}</p>
       </div>
       <div class="ingame-logo">
         <p></p>
-        <p><img src="../assets/DMT.png" class="game-img" /></p>
-        <p><img src="../assets/DME.png" class="game-img" /></p>
-        <p><img src="../assets/DMC.png" class="game-img" /></p>
+        <p>DMT <img src="../assets/DMT.png" class="game-img" /></p>
+        <p>DMC <img src="../assets/DMC.png" class="game-img" /></p>
+        <p>DME <img src="../assets/DME.png" class="game-img" /></p>
       </div>
       <div class="daily-info">
         <label class="daily-title">Daily Cost/Mine:</label>
@@ -45,21 +46,21 @@
               : 'daily-info-neg'
           "
         >
-          {{ ((user.production["DMT"] - user.cost["DMT"]).toFixed(4) * 24).toFixed(4) }}
-        </p>
-        <p :class="
-            (user.production['DME'] - user.cost['DME']).toFixed(4) * 24 > 0
-              ? 'daily-info-pos'
-              : 'daily-info-neg'
-          ">
-          {{ ((user.production["DME"] - user.cost["DME"]) * 24).toFixed(4) }}
+          {{ ((user.production["DMT"] - user.cost["DMT"]).toFixed(4) * 24).toFixed(4) }} DMT
         </p>
         <p :class="
             (user.production['DMC'] - user.cost['DMC']).toFixed(4) * 24 > 0
               ? 'daily-info-pos'
               : 'daily-info-neg'
           ">
-          {{ ((user.production["DMC"] - user.cost["DMC"]).toFixed(4) * 24).toFixed(4) }}
+          {{ ((user.production["DMC"] - user.cost["DMC"]).toFixed(4) * 24).toFixed(4) }} DMC
+        </p>
+        <p :class="
+            (user.production['DME'] - user.cost['DME']).toFixed(4) * 24 > 0
+              ? 'daily-info-pos'
+              : 'daily-info-neg'
+          ">
+          {{ ((user.production["DME"] - user.cost["DME"]) * 24).toFixed(4) }} DME
         </p>
       </div>
     </div>
@@ -76,7 +77,7 @@
     <div class="items" v-if="this.$store.state.user.items['rigs'].length">
       <ItemClaim
         title="Rigs"
-        logo="/_nuxt/assets/DMT.png"
+        logo="/_nuxt/img/DMT.79c3a9f.png"
         :toTrim="4"
         :list="this.$store.state.user.items['rigs']"
         type="rigs"
@@ -96,7 +97,7 @@
     <div class="items" v-if="this.$store.state.user.items['workshops'].length" >
       <ItemClaim
         title="Workshops"
-        logo="/_nuxt/assets/DMC.png"
+        logo="/_nuxt/img/DMC.6f40dd0.png"
         :toTrim="0"
         :list="this.$store.state.user.items['workshops']"
         type="workshops"
@@ -116,7 +117,7 @@
     <div class="items" v-if="this.$store.state.user.items['elecsources'].length">
       <ItemClaim
         title="Electricity"
-        logo="/_nuxt/assets/DME.png"
+        logo="/_nuxt/img/DME.cab925c.png"
         :toTrim="0"
         :list="this.$store.state.user.items['elecsources']"
         type="elecsources"
@@ -138,6 +139,7 @@
 
 <script>
 import ItemClaim from "./ItemClaim.vue";
+import Buffer from "./Buffer.vue";
 
 const getRandomValues = require('get-random-values')
 
@@ -148,7 +150,7 @@ export default {
       return this.$store.state.user;
     },
   },
-  components: { ItemClaim },
+  components: { ItemClaim, Buffer },
 };
 </script>
 
@@ -243,6 +245,7 @@ export default {
 }
 .ingame-logo {
   margin-top: 1%;
+  font-size: small;
 }
 
 .game-img {

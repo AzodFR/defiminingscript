@@ -21,9 +21,11 @@ export default {
             clearInterval(this.actions);
             const transac = this.$store.state.user.actions[0];
             try {
+               this.$root.$emit(`${transac.id}.claiming`)
               const result = await this.$store.state.user.wax.api.transact(
                 transac.action, transac.block
               )
+              this.$root.$emit(`${transac.id}.success`)
                this.$store.commit("user/rmAction", transac);
               this.$store.commit("user/setLock", false);
               this.checkAction()
@@ -48,9 +50,11 @@ export default {
             clearInterval(this.retry);
             const transac = this.$store.state.user.retry[0];
             try {
+              this.$root.$emit(`${transac.id}.retry`, transac.retry)
               const result = await this.$store.state.user.wax.api.transact(
                 transac.action, transac.block
               )
+              this.$root.$emit(`${transac.id}.success`)
                this.$store.commit("user/rmRetryAction", transac);
               this.$store.commit("user/setLock", false);
               this.checkRetry()

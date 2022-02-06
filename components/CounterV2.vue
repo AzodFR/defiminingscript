@@ -1,21 +1,21 @@
 <template>
   <div>
-    <button class="DisBtn" v-if="!ISreadyToClaim" disabled>
+    <button class="DisBtn" v-if="!readyToClaim" disabled>
       {{ remainingTime }}
     </button>
-    <button class="EnBtn" v-else @click="handleClaim">CLAIM</button>
+    <button class="EnBtn" v-else @click="handleClaim">{{msg}}</button>
     <!--<button @click="test">test</button>-->
     <b-spinner label="Spinning" v-if="wait" class="spinner-login"></b-spinner>
   </div>
 </template>
 
 <script>
-import * as waxjs from "@waxio/waxjs/dist";
 export default {
   name: "Counter",
   props: ["timestamp", "autoclaim", "item", "claiminfo"],
   data() {
     return {
+      msg: "Ready to claim",
       wait: false,
       loaded: false,
       readyToClaim: false,
@@ -55,20 +55,30 @@ export default {
     // eslint-disable-next-line object-shorthand
     timestamp: function () {
       this.loaded = false;
-      this.readyToClaim = false;
+      // this.readyToClaim = false;
       this.showRemaining();
     },
     // eslint-disable-next-line object-shorthand
     autoclaim: function () {
       if (this.autoclaim) {
         this.loaded = false;
-        this.readyToClaim = false;
+        // this.readyToClaim = false;
         this.showRemaining();
       }
     },
   },
   mounted() {
     this.showRemaining();
+    this.$root.$on(`${this.item.asset_id}.claiming`, () => {
+      this.msg = "Claiming...";
+    })
+    this.$root.$on(`${this.item.asset_id}.success`, () => {
+      this.msg = "Ready to claim";
+      this.readyToClaim = false;
+    })
+    this.$root.$on(`${this.item.asset_id}.retry`, (nb) => {
+      this.msg = `Retry to claim/repair... (${nb})`;
+    })
   },
   methods: {
     /*test() {
@@ -82,18 +92,64 @@ export default {
         const now = new Date();
         const end = new Date(this.timestamp * 1000);
         const distance = end.getTime() - now.getTime();
-
+        if (
+          this.$store.state.user.autorepair[this.claiminfo.type][
+            this.item.asset_id
+          ] === true &&
+          !(
+            this.$store.state.user.actions.find((x) => x.id === item.id) !=
+            undefined
+          )
+        ) {
+          if (
+            this.item.current_durability <= this.item.durability / 2 &&
+            this.$store.state.user.autorepair[this.claiminfo.type][
+              this.item.asset_id
+            ]
+          ) {
+            let cost =
+              (this.item.durability - this.item.current_durability) * 0.01;
+            if (this.$store.state.user.ressources["DMC"] >= cost) {
+              const r_action = {
+                actions: [
+                  {
+                    account: "defiminingio",
+                    name: this.claiminfo.r_action,
+                    authorization: [
+                      {
+                        actor: this.$store.state.user.name,
+                        permission: "active",
+                      },
+                    ],
+                    data: {
+                      to: this.$store.state.user.name,
+                      asset_id: this.item.asset_id,
+                    },
+                  },
+                ],
+              };
+              const r_block = {
+                blocksBehind: 3,
+                expireSeconds: 30,
+              };
+              const r_transac = {
+                id: this.item.asset_id,
+                action: r_action,
+                block: r_block,
+              };
+              this.$store.commit("user/addRAction", r_transac);
+            }
+          }
+        }
         if (distance <= 0) {
           clearInterval(timer);
           this.readyToClaim = true;
           this.loaded = true;
-
           if (
             this.$store.state.user.autoclaim[this.claiminfo.type][
               this.item.asset_id
             ] === true
           ) {
-            
             if (this.item.current_durability >= this.item.durability_usage) {
               this.handleClaim();
             }
@@ -112,9 +168,12 @@ export default {
       }, 1000);
     },
     async handleClaim() {
-      if (this.$store.state.user.actions.find(x => x.id === item.id) != undefined) return;
+      if (
+        this.$store.state.user.actions.find((x) => x.id === item.id) !=
+        undefined
+      )
+        return;
       try {
-        this.wait = true;
         this.readyToClaim = false;
         const data =
           this.claiminfo.action == "claimdmc"
@@ -146,8 +205,14 @@ export default {
           block: block,
         };
         this.$store.commit("user/addAction", transac);
+        this.msg = "Claim in queue..."
         if (
-          this.item.current_durability <= this.item.durability &&
+          this.$store.state.user.r_actions.find((x) => x.id === item.id) !=
+          undefined
+        )
+          return;
+        if (
+          this.item.current_durability <= this.item.durability / 2 &&
           this.$store.state.user.autorepair[this.claiminfo.type][
             this.item.asset_id
           ]
@@ -202,12 +267,12 @@ button {
   box-shadow: 1px 1px 0px 1px rgba(0, 0, 0, 0.2);
 }
 .DisBtn {
-  background: rgb(216, 146, 16);
+  background: rgb(211, 140, 9);
   color: rgb(15, 12, 5);
   font-size: small;
 }
 .EnBtn {
-  background: rgb(98, 194, 20);
+  background: #28a745;
   color: rgb(15, 27, 14);
   font-size: small;
 }
