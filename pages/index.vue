@@ -4,6 +4,7 @@
     <Login v-if="name == ''" />
     <div v-else>
       <Interval />
+      <Buffer />
       <Test />
     </div>
     <div class="devinfo">
@@ -22,6 +23,7 @@ import DefiLogo from "../components/DefiLogo.vue";
 import Login from "../components/Login.vue";
 import Interval from "../components/Interval.vue";
 import Test from "~/components/Test.vue";
+import Buffer from "../components/Buffer.vue";
 
 export default {
   name: "IndexPage",
@@ -29,7 +31,8 @@ export default {
     DefiLogo,
     Login,
     Interval,
-    Test
+    Test,
+    Buffer
 },
   computed: {
     name() {

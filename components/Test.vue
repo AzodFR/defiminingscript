@@ -10,11 +10,11 @@
       </div>
       <div class="wax-title">
         Staking
-        <p class="wax-value">397.62 ￦</p>
+        <p class="wax-value">{{user.stake}} ￦</p>
       </div>
       <div class="cpu">
         CPU
-        <p class="cpu-value">29%</p>
+        <p :class="user.cpu >= 80 ? 'cpu-value cpu-high' : user.cpu >= 60 ? 'cpu-value cpu-mid' : 'cpu-value cpu-low'">{{user.cpu}}%</p>
       </div>
     </div>
     <div class="info-game">
@@ -66,16 +66,17 @@
     <div class="energy-profit">
       <div class="energy">
         <label class="energy-title">Energy:</label
-        ><label class="energy-value">{{user.energy}}/500000</label>
+        ><label :class="user.energy > 250000 ? 'energy-value cpu-low' : user.energy > 100000 ? 'energy-value cpu-mid' : 'energy-value cpu-high'">{{user.energy}}/500000</label>
       </div>
       <div class="profit">
         <label class="profit-title">Daily Profit:</label
-        ><label class="energy-value">17 ￦</label>
+        ><label class="energy-value cpu-low">17 ￦</label>
       </div>
     </div>
-    <div class="items">
+    <div class="items" v-if="this.$store.state.user.items['rigs'].length">
       <ItemClaim
         title="Rigs"
+        logo="/_nuxt/assets/DMT.png"
         :toTrim="4"
         :list="this.$store.state.user.items['rigs']"
         type="rigs"
@@ -92,9 +93,10 @@
         }"
       />
     </div>
-    <div class="items">
+    <div class="items" v-if="this.$store.state.user.items['workshops'].length" >
       <ItemClaim
         title="Workshops"
+        logo="/_nuxt/assets/DMC.png"
         :toTrim="0"
         :list="this.$store.state.user.items['workshops']"
         type="workshops"
@@ -111,9 +113,10 @@
         }"
       />
     </div>
-    <div class="items">
+    <div class="items" v-if="this.$store.state.user.items['elecsources'].length">
       <ItemClaim
         title="Electricity"
+        logo="/_nuxt/assets/DME.png"
         :toTrim="0"
         :list="this.$store.state.user.items['elecsources']"
         type="elecsources"
@@ -135,6 +138,9 @@
 
 <script>
 import ItemClaim from "./ItemClaim.vue";
+
+const getRandomValues = require('get-random-values')
+
 export default {
   name: "Test",
   computed: {
@@ -179,13 +185,21 @@ export default {
   margin-top: 0.5%;
 }
 .cpu-value {
-  background-color: #28a745;
   border-radius: 5%;
   margin-top: 1%;
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
+.cpu-high {
+  background-color: rgb(110, 2, 2);
+}
+.cpu-mid {
+  background-color: rgb(110, 85, 2);
+}
 
+.cpu-low {
+  background-color: #28a745;
+}
 /************************/
 
 .info-game {
@@ -250,7 +264,7 @@ export default {
 
 .daily-info-pos {
   text-align: center;
-  background-color: rgb(1, 80, 1);
+  background-color: #28a745;
 }
 .daily-info-neg {
   text-align: center;
@@ -280,7 +294,7 @@ export default {
 }
 
 .energy-value {
-  background-color: rgb(1, 80, 1);
+  /* background-color: #28a745; */
   border-radius: 5%;
   padding-left: 0.5em;
   padding-right: 0.5em;

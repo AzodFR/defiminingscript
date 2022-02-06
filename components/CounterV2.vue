@@ -87,20 +87,13 @@ export default {
           clearInterval(timer);
           this.readyToClaim = true;
           this.loaded = true;
-          console.log(
-            this.$store.state.user.autoclaim[this.claiminfo.type][
-              this.item.asset_id
-            ]
-          );
+
           if (
             this.$store.state.user.autoclaim[this.claiminfo.type][
               this.item.asset_id
             ] === true
           ) {
-            console.log("AutoClaim timer = 0");
-            console.log(this.claiminfo.type);
-            console.log(this.claiminfo.action);
-            console.log(this.item.asset_id);
+            
             if (this.item.current_durability >= this.item.durability_usage) {
               this.handleClaim();
             }
@@ -119,16 +112,7 @@ export default {
       }, 1000);
     },
     async handleClaim() {
-      if (this.$store.state.user.lock) return;
-      this.$store.commit("user/setLock", true)
-      console.log("ready to claim !");
-      console.log(this.item.asset_id);
-      const test =
-        this.$store.state.user.autoclaim[this.claiminfo.type][
-          this.item.asset_id
-        ];
-      console.log(this.$store.state.user.name);
-
+      if (this.$store.state.user.actions.find(x => x.id === item.id) != undefined) return;
       try {
         this.wait = true;
         this.readyToClaim = false;
@@ -136,69 +120,75 @@ export default {
           this.claiminfo.action == "claimdmc"
             ? { username: this.$store.state.user.name }
             : { to: this.$store.state.user.name, asset_id: this.item.asset_id };
-        console.log("test:", data);
-        const res = await this.$store.state.user.wax.api.transact(
-          {
-            actions: [
-              {
-                account: "defiminingio",
-                name: this.claiminfo.action,
-                authorization: [
-                  {
-                    actor: this.$store.state.user.name,
-                    permission: "active",
-                  },
-                ],
-                data: data,
-              },
-            ],
-          },
-          {
-            blocksBehind: 3,
-            expireSeconds: 30,
-          }
-        );
-        console.log(res);
+
+        const action = {
+          actions: [
+            {
+              account: "defiminingio",
+              name: this.claiminfo.action,
+              authorization: [
+                {
+                  actor: this.$store.state.user.name,
+                  permission: "active",
+                },
+              ],
+              data: data,
+            },
+          ],
+        };
+        const block = {
+          blocksBehind: 3,
+          expireSeconds: 30,
+        };
+        const transac = {
+          id: this.item.asset_id,
+          action: action,
+          block: block,
+        };
+        this.$store.commit("user/addAction", transac);
         if (
-          this.item.current_durability <= this.item.durability / 2 &&
+          this.item.current_durability <= this.item.durability &&
           this.$store.state.user.autorepair[this.claiminfo.type][
             this.item.asset_id
           ]
         ) {
           let cost =
             (this.item.durability - this.item.current_durability) * 0.01;
-            if (this.$store.state.user.ressources["DMC"] >= cost) {
-              const res2 = await this.$store.state.user.wax.api.transact(
-          {
-            actions: [
-              {
-                account: "defiminingio",
-                name: this.claiminfo.r_action,
-                authorization: [
-                  {
-                    actor: this.$store.state.user.name,
-                    permission: "active",
+          if (this.$store.state.user.ressources["DMC"] >= cost) {
+            const r_action = {
+              actions: [
+                {
+                  account: "defiminingio",
+                  name: this.claiminfo.r_action,
+                  authorization: [
+                    {
+                      actor: this.$store.state.user.name,
+                      permission: "active",
+                    },
+                  ],
+                  data: {
+                    to: this.$store.state.user.name,
+                    asset_id: this.item.asset_id,
                   },
-                ],
-                data: { to: this.$store.state.user.name, asset_id: this.item.asset_id },
-              },
-            ],
-          },
-          {
-            blocksBehind: 3,
-            expireSeconds: 30,
+                },
+              ],
+            };
+            const r_block = {
+              blocksBehind: 3,
+              expireSeconds: 30,
+            };
+            const r_transac = {
+              id: this.item.asset_id,
+              action: r_action,
+              block: r_block,
+            };
+            this.$store.commit("user/addRAction", r_transac);
           }
-        );
-        console.log(res2);
-            }
-
         }
         //alert("claiming !");
       } catch (e) {
         console.log(e);
       }
-      this.wait = false;
-      this.$store.commit("user/setLock", false)
     },
   },
 };

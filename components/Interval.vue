@@ -9,6 +9,7 @@ export default {
   async mounted() {
     await this.getTemplates();
     this.fetchTokens();
+    this.launchFetchStake();
     this.fetchUserInfo();
     this.launchIntervalTokens();
     this.launchIntervalInfo();
@@ -18,6 +19,32 @@ export default {
     this.launchIntervalItems();
   },
   methods: {
+    launchFetchStake: function() {
+      this.fetchStake();
+      setInterval(() => {
+        this.fetchStake();
+      }, time)
+    },
+    fetchStake: async function() {
+await fetch("https://chain.wax.io/v1/chain/get_account", {
+    "credentials": "omit",
+    "headers": {
+        "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+          "Content-Type": "text/plain;charset=UTF-8",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "no-cors",
+          "Sec-Fetch-Site": "cross-site",
+    },
+    "referrer": "https://fw.f12key.xyz/",
+    "body": "{\"account_name\":\"vzfjg.wam\"}",
+    "method": "POST",
+    "mode": "cors"
+}).then((x) => x.json())
+        .then(async (rows) => {
+          this.$store.commit("user/setStake", rows.total_resources.cpu_weight.split(" ")[0]);
+          this.$store.commit("user/setCPU", (rows.cpu_limit.used * 100 / rows.cpu_limit.max).toFixed(0));
+        })
+    },
     launchIntervalItems: function () {
       setInterval(() => {
         this.fetchItems("rigs");
@@ -63,7 +90,7 @@ export default {
             if (!this.$store.state.user.logged_asset.includes(elem.asset_id)) {
               this.$store.commit("user/addAsset", elem.asset_id);
               // si elem.claim_type === "DMT" : factor = 0.0304 / 24
-              console.log(elem.claim_type);
+              
               if (elem.claim_type === "DMT") {
                 this.$store.commit("user/addProduction", {
                   type: elem.claim_type,
@@ -173,6 +200,7 @@ export default {
         });
     },
     async launchIntervalInfo() {
+      this.fetchUserInfo()
       setInterval(() => {
         this.fetchUserInfo();
       }, time);
@@ -214,6 +242,7 @@ export default {
         });
     },
     async launchIntervalTokens() {
+      this.fetchTokens();
       setInterval(() => {
         this.fetchTokens();
       }, time);

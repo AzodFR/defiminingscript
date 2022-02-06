@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <label class="title">{{ title }}</label>
+      <label class="title">{{ title }}   <img :src="logo" class="game-img" /></label>
       <AutoClaimButton v-if="show.claimAll" :type="type" class="allBtn-1" />
       <div v-else class="blank"></div>
       <AutoRepairButton v-if="show.repairAll" :type="type" class="allBtn-2" />
@@ -62,6 +62,7 @@ import LocalAutoClaimButton from "./LocalAutoClaimButton.vue";
 export default {
   props: {
     title: String,
+    logo: String,
     toTrim: Number,
     list: Array,
     type: String,
