@@ -97,7 +97,7 @@ export default {
             this.item.asset_id
           ] === true &&
           !(
-            this.$store.state.user.actions.find((x) => x.id === item.id) !=
+            this.$store.state.user.actions.find((x) => x.id === this.item.id) !=
             undefined
           )
         ) {
@@ -169,7 +169,7 @@ export default {
     },
     async handleClaim() {
       if (
-        this.$store.state.user.actions.find((x) => x.id === item.id) !=
+        this.$store.state.user.actions.find((x) => x.id === this.item.id) !=
         undefined
       )
         return;
@@ -207,7 +207,7 @@ export default {
         this.$store.commit("user/addAction", transac);
         this.msg = "Claim in queue..."
         if (
-          this.$store.state.user.r_actions.find((x) => x.id === item.id) !=
+          this.$store.state.user.r_actions.find((x) => x.id === this.item.id) !=
           undefined
         )
           return;

@@ -76,6 +76,7 @@ export default {
        this.r_actions = setInterval(async () => {
         if (this.$store.state.user.r_actions.length != 0) {
           if (!this.$store.state.user.lock) {
+            
             this.$store.commit("user/setLock", true);
             clearInterval(this.r_actions);
             const transac = this.$store.state.user.r_actions[0];
