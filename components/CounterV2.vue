@@ -19,6 +19,7 @@ export default {
       wait: false,
       loaded: false,
       readyToClaim: false,
+      last: undefined,
       queued: false,
       displayHours: 0,
       displayMinutes: 0,
@@ -71,6 +72,7 @@ export default {
   mounted() {
     this.showRemaining();
     this.$on(`${this.item.asset_id}.claiming`, () => {
+      this.last = Date.now()
       console.log("received claiming!");
       this.msg = "Claiming...";
     });
@@ -78,10 +80,14 @@ export default {
       console.log("counter receive test", id);
     });
     this.$on(`${this.item.asset_id}.success`, () => {
+      this.last = Date.now()
       console.log("received success!");
       this.msg = "Ready to claim";
       this.readyToClaim = false;
       this.queued = false;
+      setTimeout(() => {
+        this.last = undefined;
+      }, 10000);
       this.showRemaining();
     });
     this.$on(`${this.item.asset_id}.retry`, (nb) => {
@@ -152,8 +158,11 @@ export default {
           }
         }
         if (distance <= 0) {
+          console.log("wow")
           clearInterval(timer);
+          if (this.last == undefined) {
           this.readyToClaim = true;
+          }
           this.loaded = true;
           if (
             this.$store.state.user.autoclaim[this.claiminfo.type][
@@ -165,6 +174,9 @@ export default {
             }
           }
           return null;
+        }
+        else {
+          this.readyToClaim = false;
         }
 
         const hours = Math.floor(distance / this._hours);
@@ -186,7 +198,7 @@ export default {
       if (!this.queue) {
         this.queued = true;
         try {
-          this.readyToClaim = true;
+
           const data =
             this.claiminfo.action == "claimdmc"
               ? { username: this.$store.state.user.name }
@@ -219,52 +231,55 @@ export default {
             action: action,
             block: block,
           };
-          console.log("add to queue");
-          this.$store.commit("user/addAction", transac);
-          this.msg = "Claim in queue...";
-          if (
-            this.$store.state.user.r_actions.find(
-              (x) => x.id === this.item.id
-            ) != undefined
-          )
-            return;
-          if (
-            this.item.current_durability <= this.item.durability / 2 &&
-            this.$store.state.user.autorepair[this.claiminfo.type][
-              this.item.asset_id
-            ]
-          ) {
-            let cost =
-              (this.item.durability - this.item.current_durability) * 0.01;
-            if (this.$store.state.user.ressources["DMC"] >= cost) {
-              const r_action = {
-                actions: [
-                  {
-                    account: "defiminingio",
-                    name: this.claiminfo.r_action,
-                    authorization: [
-                      {
-                        actor: this.$store.state.user.name,
-                        permission: "active",
+          if (this.last == undefined) {
+            this.readyToClaim = true;
+            console.log("add to queue");
+            this.$store.commit("user/addAction", transac);
+            this.msg = "Claim in queue...";
+            if (
+              this.$store.state.user.r_actions.find(
+                (x) => x.id === this.item.id
+              ) != undefined
+            )
+              return;
+            if (
+              this.item.current_durability <= this.item.durability / 2 &&
+              this.$store.state.user.autorepair[this.claiminfo.type][
+                this.item.asset_id
+              ]
+            ) {
+              let cost =
+                (this.item.durability - this.item.current_durability) * 0.01;
+              if (this.$store.state.user.ressources["DMC"] >= cost) {
+                const r_action = {
+                  actions: [
+                    {
+                      account: "defiminingio",
+                      name: this.claiminfo.r_action,
+                      authorization: [
+                        {
+                          actor: this.$store.state.user.name,
+                          permission: "active",
+                        },
+                      ],
+                      data: {
+                        to: this.$store.state.user.name,
+                        asset_id: this.item.asset_id,
                       },
-                    ],
-                    data: {
-                      to: this.$store.state.user.name,
-                      asset_id: this.item.asset_id,
                     },
-                  },
-                ],
-              };
-              const r_block = {
-                blocksBehind: 3,
-                expireSeconds: 30,
-              };
-              const r_transac = {
-                id: this.item.asset_id,
-                action: r_action,
-                block: r_block,
-              };
-              this.$store.commit("user/addRAction", r_transac);
+                  ],
+                };
+                const r_block = {
+                  blocksBehind: 3,
+                  expireSeconds: 30,
+                };
+                const r_transac = {
+                  id: this.item.asset_id,
+                  action: r_action,
+                  block: r_block,
+                };
+                this.$store.commit("user/addRAction", r_transac);
+              }
             }
           }
           //alert("claiming !");

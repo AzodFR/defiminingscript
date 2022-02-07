@@ -6,7 +6,7 @@
 
       <div class="login">
         <label class="login-value">{{ user.name }}</label>
-         <div class="cpu">
+        <div class="cpu">
           CPU
           <label
             :class="
@@ -23,7 +23,9 @@
       <div class="wax-info">
         <div class="wax-title">
           Balance
-          <label class="wax-value">{{ parseFloat(user.tokens["WAX"]).toFixed(2) }} ￦</label>
+          <label class="wax-value"
+            >{{ parseFloat(user.tokens["WAX"]).toFixed(2) }} ￦</label
+          >
         </div>
         <div class="wax-title">
           Staking
@@ -104,9 +106,7 @@
               : 'daily-info-neg'
           "
         >
-          {{
-            ((user.production["DME"] - user.cost["DME"]) * 24).toFixed(4)
-          }}
+          {{ ((user.production["DME"] - user.cost["DME"]) * 24).toFixed(4) }}
           DME <img src="../assets/DME.png" class="game-img" />
         </p>
       </div>
@@ -186,8 +186,6 @@ import ItemClaim from "./ItemClaim.vue";
 import Buffer from "./Buffer.vue";
 import DefiLogo from "./DefiLogo.vue";
 
-const getRandomValues = require("get-random-values");
-
 export default {
   name: "Test",
   computed: {
@@ -197,24 +195,23 @@ export default {
   },
   components: { ItemClaim, Buffer, DefiLogo },
   mounted() {
-
     this.$on(`test`, (id) => {
-      console.log("main receive test from ", id)
-      this.$emit('test', id)
-    })
+      console.log("main receive test from ", id);
+      this.$emit("test", id);
+    });
     this.$on(`claiming`, (id) => {
-      console.log("itemclaim receive claiming from ", id)
-      this.$emit(`${id}.claiming`)
-    })
+      console.log("itemclaim receive claiming from ", id);
+      this.$emit(`${id}.claiming`);
+    });
     this.$on(`success`, (id) => {
-      console.log("itemclaim receive success from ", id)
-      this.$emit(`${id}.success`)
-    })
+      console.log("itemclaim receive success from ", id);
+      this.$emit(`${id}.success`);
+    });
 
     this.$on(`retry`, (transac) => {
-      console.log("itemclaim receive retry from ", transac.id)
-      this.$emit(`${transac.id}.retry`, transac.retry)
-    })
+      console.log("itemclaim receive retry from ", transac.id);
+      this.$emit(`${transac.id}.retry`, transac.retry);
+    });
   },
 };
 </script>
@@ -288,7 +285,7 @@ export default {
   font-size: small;
 }
 .ingame-div {
-  display:inline-block;
+  display: inline-block;
   font-size: small;
   margin-right: 1%;
 }
