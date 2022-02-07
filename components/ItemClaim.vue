@@ -74,16 +74,16 @@ export default {
   mounted() {
     this.$root.$on(`claiming`, (id) => {
       console.log("itemclaim receive claiming from ", id)
-      this.$refs.CounterV2.$emit(`${id}.claiming`)
+      this.$refs.counter[0].$emit(`${id}.claiming`)
     })
     this.$root.$on(`success`, (id) => {
       console.log("itemclaim receive success from ", id)
-      this.$refs.CounterV2.$emit(`${id}.success`)
+      this.$refs.counter[0].$emit(`${id}.success`)
     })
 
     this.$root.$on(`retry`, (transac) => {
       console.log("itemclaim receive retry from ", transac.id)
-      this.$refs.CounterV2.$emit(`${transac.id}.retry`, transac.retry)
+      this.$refs.counter[0].$emit(`${transac.id}.retry`, transac.retry)
     })
   },
 };

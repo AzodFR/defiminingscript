@@ -69,16 +69,16 @@ export default {
   },
   mounted() {
     this.showRemaining();
-     this.$root.$on(`${this.item.asset_id}.claiming`, () => {
+     this.$on(`${this.item.asset_id}.claiming`, () => {
        console.log("received claiming!")
       this.msg = "Claiming...";
     });
-    this.$root.$on(`${this.item.asset_id}.success`, () => {
+    this.$on(`${this.item.asset_id}.success`, () => {
       console.log("received success!")
       this.msg = "Ready to claim";
       this.readyToClaim = false;
     });
-    this.$root.$on(`${this.item.asset_id}.retry`, (nb) => {
+    this.$on(`${this.item.asset_id}.retry`, (nb) => {
       console.log("received retry!")
       this.msg = `Retry to claim/repair... (${nb})`;
     });
