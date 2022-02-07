@@ -127,18 +127,21 @@ export const mutations = {
     if (idx !== -1) {
       state.actions.splice(idx, 1);
     }
+    state.lock = false
   },
   rmRAction(state, r_action) {
     let idx = state.r_actions.indexOf(r_action);
     if (idx !== -1) {
       state.r_actions.splice(idx, 1);
     }
+    state.lock = false
   },
   rmRetryAction(state, action) {
     let idx = state.retry.indexOf(action);
     if (idx !== -1) {
       state.retry.splice(idx, 1);
     }
+    state.lock = false
   }
 
 }

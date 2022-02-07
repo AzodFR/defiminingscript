@@ -3,7 +3,7 @@
     <button class="DisBtn" v-if="!readyToClaim" disabled>
       {{ remainingTime }}
     </button>
-    <button class="EnBtn" v-else @click="handleClaim">{{msg}}</button>
+    <button class="EnBtn" v-else @click="handleClaim">{{ msg }}</button>
     <!--<button @click="test">test</button>-->
     <b-spinner label="Spinning" v-if="wait" class="spinner-login"></b-spinner>
   </div>
@@ -19,6 +19,7 @@ export default {
       wait: false,
       loaded: false,
       readyToClaim: false,
+      queued: false,
       displayHours: 0,
       displayMinutes: 0,
       displaySeconds: 0,
@@ -69,17 +70,22 @@ export default {
   },
   mounted() {
     this.showRemaining();
-     this.$on(`${this.item.asset_id}.claiming`, () => {
-       console.log("received claiming!")
+    this.$on(`${this.item.asset_id}.claiming`, () => {
+      console.log("received claiming!");
       this.msg = "Claiming...";
     });
+    this.$on("test", (id) => {
+      console.log("counter receive test", id);
+    });
     this.$on(`${this.item.asset_id}.success`, () => {
-      console.log("received success!")
+      console.log("received success!");
       this.msg = "Ready to claim";
       this.readyToClaim = false;
+      this.queued = false;
+      this.showRemaining();
     });
     this.$on(`${this.item.asset_id}.retry`, (nb) => {
-      console.log("received retry!")
+      console.log("received retry!");
       this.msg = `Retry to claim/repair... (${nb})`;
     });
   },
@@ -140,7 +146,7 @@ export default {
                 action: r_action,
                 block: r_block,
               };
-              console.log("add to repair")
+              console.log("add to repair");
               this.$store.commit("user/addRAction", r_transac);
             }
           }
@@ -177,87 +183,94 @@ export default {
         undefined
       )
         return;
-      try {
-        this.readyToClaim = true;
-        const data =
-          this.claiminfo.action == "claimdmc"
-            ? { username: this.$store.state.user.name }
-            : { to: this.$store.state.user.name, asset_id: this.item.asset_id };
+      if (!this.queue) {
+        this.queued = true;
+        try {
+          this.readyToClaim = true;
+          const data =
+            this.claiminfo.action == "claimdmc"
+              ? { username: this.$store.state.user.name }
+              : {
+                  to: this.$store.state.user.name,
+                  asset_id: this.item.asset_id,
+                };
 
-        const action = {
-          actions: [
-            {
-              account: "defiminingio",
-              name: this.claiminfo.action,
-              authorization: [
-                {
-                  actor: this.$store.state.user.name,
-                  permission: "active",
-                },
-              ],
-              data: data,
-            },
-          ],
-        };
-        const block = {
-          blocksBehind: 3,
-          expireSeconds: 30,
-        };
-        const transac = {
-          id: this.item.asset_id,
-          action: action,
-          block: block,
-        };
-        console.log("add to queue")
-        this.$store.commit("user/addAction", transac);
-        this.msg = "Claim in queue..."
-        if (
-          this.$store.state.user.r_actions.find((x) => x.id === this.item.id) !=
-          undefined
-        )
-          return;
-        if (
-          this.item.current_durability <= this.item.durability / 2 &&
-          this.$store.state.user.autorepair[this.claiminfo.type][
-            this.item.asset_id
-          ]
-        ) {
-          let cost =
-            (this.item.durability - this.item.current_durability) * 0.01;
-          if (this.$store.state.user.ressources["DMC"] >= cost) {
-            const r_action = {
-              actions: [
-                {
-                  account: "defiminingio",
-                  name: this.claiminfo.r_action,
-                  authorization: [
-                    {
-                      actor: this.$store.state.user.name,
-                      permission: "active",
-                    },
-                  ],
-                  data: {
-                    to: this.$store.state.user.name,
-                    asset_id: this.item.asset_id,
+          const action = {
+            actions: [
+              {
+                account: "defiminingio",
+                name: this.claiminfo.action,
+                authorization: [
+                  {
+                    actor: this.$store.state.user.name,
+                    permission: "active",
                   },
-                },
-              ],
-            };
-            const r_block = {
-              blocksBehind: 3,
-              expireSeconds: 30,
-            };
-            const r_transac = {
-              id: this.item.asset_id,
-              action: r_action,
-              block: r_block,
-            };
-            this.$store.commit("user/addRAction", r_transac);
+                ],
+                data: data,
+              },
+            ],
+          };
+          const block = {
+            blocksBehind: 3,
+            expireSeconds: 30,
+          };
+          const transac = {
+            id: this.item.asset_id,
+            action: action,
+            block: block,
+          };
+          console.log("add to queue");
+          this.$store.commit("user/addAction", transac);
+          this.msg = "Claim in queue...";
+          if (
+            this.$store.state.user.r_actions.find(
+              (x) => x.id === this.item.id
+            ) != undefined
+          )
+            return;
+          if (
+            this.item.current_durability <= this.item.durability / 2 &&
+            this.$store.state.user.autorepair[this.claiminfo.type][
+              this.item.asset_id
+            ]
+          ) {
+            let cost =
+              (this.item.durability - this.item.current_durability) * 0.01;
+            if (this.$store.state.user.ressources["DMC"] >= cost) {
+              const r_action = {
+                actions: [
+                  {
+                    account: "defiminingio",
+                    name: this.claiminfo.r_action,
+                    authorization: [
+                      {
+                        actor: this.$store.state.user.name,
+                        permission: "active",
+                      },
+                    ],
+                    data: {
+                      to: this.$store.state.user.name,
+                      asset_id: this.item.asset_id,
+                    },
+                  },
+                ],
+              };
+              const r_block = {
+                blocksBehind: 3,
+                expireSeconds: 30,
+              };
+              const r_transac = {
+                id: this.item.asset_id,
+                action: r_action,
+                block: r_block,
+              };
+              this.$store.commit("user/addRAction", r_transac);
+            }
           }
+          //alert("claiming !");
+        } catch (e) {
+          console.log(e);
         }
-        //alert("claiming !");
-      } catch (e) {
-        console.log(e);
       }
     },
   },

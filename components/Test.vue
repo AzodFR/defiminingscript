@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Buffer />
+    <Buffer ref="buffer" />
     <div class="info-user">
       <DefiLogo class="logo-top" />
 
@@ -114,6 +114,7 @@
 
     <div class="items" v-if="this.$store.state.user.items['rigs'].length">
       <ItemClaim
+        ref="rigs"
         title="Rigs"
         logo="/_nuxt/img/DMT.79c3a9f.png"
         :toTrim="4"
@@ -135,6 +136,7 @@
     <div class="items" v-if="this.$store.state.user.items['workshops'].length">
       <ItemClaim
         title="Workshops"
+        ref="claim"
         logo="/_nuxt/img/DMC.6f40dd0.png"
         :toTrim="0"
         :list="this.$store.state.user.items['workshops']"
@@ -158,6 +160,7 @@
     >
       <ItemClaim
         title="Electricity"
+        ref="claim"
         logo="/_nuxt/img/DME.cab925c.png"
         :toTrim="0"
         :list="this.$store.state.user.items['elecsources']"
@@ -193,6 +196,26 @@ export default {
     },
   },
   components: { ItemClaim, Buffer, DefiLogo },
+  mounted() {
+
+    this.$on(`test`, (id) => {
+      console.log("main receive test from ", id)
+      this.$emit('test', id)
+    })
+    this.$on(`claiming`, (id) => {
+      console.log("itemclaim receive claiming from ", id)
+      this.$emit(`${id}.claiming`)
+    })
+    this.$on(`success`, (id) => {
+      console.log("itemclaim receive success from ", id)
+      this.$emit(`${id}.success`)
+    })
+
+    this.$on(`retry`, (transac) => {
+      console.log("itemclaim receive retry from ", transac.id)
+      this.$emit(`${transac.id}.retry`, transac.retry)
+    })
+  },
 };
 </script>
 

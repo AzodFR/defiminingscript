@@ -72,6 +72,11 @@ export default {
   },
   components: { CounterV2, LocalAutoClaimButton },
   mounted() {
+    console.log(this.$refs.counter[0])
+    this.$root.$on(`test`, (id) => {
+      console.log("itemclaim receive test from ", id)
+      this.$refs.counter[0].$emit(`test`, id)
+    })
     this.$root.$on(`claiming`, (id) => {
       console.log("itemclaim receive claiming from ", id)
       this.$refs.counter[0].$emit(`${id}.claiming`)
