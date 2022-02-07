@@ -16,16 +16,19 @@ export default {
     checkAction: function() {
       this.actions = setInterval(async () => {
         if (this.$store.state.user.actions.length != 0) {
+          console.log(this.$store.state.user.actions)
           if (!this.$store.state.user.lock) {
             this.$store.commit("user/setLock", true);
             clearInterval(this.actions);
             const transac = this.$store.state.user.actions[0];
             try {
-               this.$root.$emit(`${transac.id}.claiming`)
+               console.log(`claiming`, transac.id)
+               this.$root.$emit(`claiming`, transac.id)
               const result = await this.$store.state.user.wax.api.transact(
                 transac.action, transac.block
               )
-              this.$root.$emit(`${transac.id}.success`)
+              console.log(`success`, transac.id)
+               this.$root.$emit(`success`, transac.id)
                this.$store.commit("user/rmAction", transac);
               this.$store.commit("user/setLock", false);
               this.checkAction()
@@ -45,16 +48,19 @@ export default {
     checkRetry: function() {
       this.retry = setInterval(async () => {
         if (this.$store.state.user.retry.length != 0) {
+          console.log(this.$store.state.user.retry)
           if (!this.$store.state.user.lock) {
             this.$store.commit("user/setLock", true);
             clearInterval(this.retry);
             const transac = this.$store.state.user.retry[0];
             try {
-              this.$root.$emit(`${transac.id}.retry`, transac.retry)
+              console.log(`retry`, transac)
+              this.$root.$emit(`retry`, transac)
               const result = await this.$store.state.user.wax.api.transact(
                 transac.action, transac.block
               )
-              this.$root.$emit(`${transac.id}.success`)
+              console.log(`success`, transac.id)
+               this.$root.$emit(`success`, transac.id)
                this.$store.commit("user/rmRetryAction", transac);
               this.$store.commit("user/setLock", false);
               this.checkRetry()
@@ -75,8 +81,9 @@ export default {
     checkRepair: function() {
        this.r_actions = setInterval(async () => {
         if (this.$store.state.user.r_actions.length != 0) {
+          console.log(this.$store.state.user.r_actions)
           if (!this.$store.state.user.lock) {
-            
+
             this.$store.commit("user/setLock", true);
             clearInterval(this.r_actions);
             const transac = this.$store.state.user.r_actions[0];

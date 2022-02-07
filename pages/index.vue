@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DefiLogo />
+    <DefiLogo v-if="name == ''"/>
     <Login v-if="name == ''" />
     <div v-else>
       <Interval />

@@ -2,42 +2,72 @@
   <div>
     <Buffer />
     <div class="info-user">
+      <DefiLogo class="logo-top" />
+
       <div class="login">
-        {{ user.name }}
+        <label class="login-value">{{ user.name }}</label>
+         <div class="cpu">
+          CPU
+          <label
+            :class="
+              user.cpu >= 80
+                ? 'cpu-value cpu-high'
+                : user.cpu >= 60
+                ? 'cpu-value cpu-mid'
+                : 'cpu-value cpu-low'
+            "
+            >{{ user.cpu }}%</label
+          >
+        </div>
       </div>
-      <div class="wax-title">
-        Balance
-        <p class="wax-value">{{ user.tokens["WAX"] }} ￦</p>
+      <div class="wax-info">
+        <div class="wax-title">
+          Balance
+          <label class="wax-value">{{ parseFloat(user.tokens["WAX"]).toFixed(2) }} ￦</label>
+        </div>
+        <div class="wax-title">
+          Staking
+          <label class="wax-value">{{ user.stake }} ￦</label>
+        </div>
       </div>
-      <div class="wax-title">
-        Staking
-        <p class="wax-value">{{user.stake}} ￦</p>
+      <div class="energy-profit">
+        <div class="energy">
+          <label class="energy-title">Energy:</label
+          ><label
+            :class="
+              user.energy > 250000
+                ? 'energy-value cpu-low'
+                : user.energy > 100000
+                ? 'energy-value cpu-mid'
+                : 'energy-value cpu-high'
+            "
+            >{{ user.energy }}/500000</label
+          >
+        </div>
+        <div class="profit">
+          <label class="profit-title">Daily Profit:</label
+          ><label class="energy-value cpu-low">17 ￦</label>
+        </div>
       </div>
-      <div class="cpu">
-        CPU
-        <p :class="user.cpu >= 80 ? 'cpu-value cpu-high' : user.cpu >= 60 ? 'cpu-value cpu-mid' : 'cpu-value cpu-low'">{{user.cpu}}%</p>
-      </div>
-    </div>
-    <div class="info-game">
-      <div class="token-info">
+      <div class="token-div">
         <label class="token-title">Tokens:</label>
         <p class="game-info-t">{{ user.tokens["DMT"] }}</p>
         <p class="game-info-t">{{ user.tokens["DMC"] }}</p>
         <p class="game-info-t">{{ user.tokens["DME"] }}</p>
       </div>
-      <div class="ingame-info">
+      <div class="ingame-div">
         <label class="ingame-title">InGame:</label>
         <p class="game-info">{{ user.ressources["DMT"] }}</p>
         <p class="game-info">{{ user.ressources["DMC"] }}</p>
         <p class="game-info">{{ user.ressources["DME"] }}</p>
       </div>
-      <div class="ingame-logo">
+      <!-- <div class="token-logo-div">
         <p></p>
         <p>DMT <img src="../assets/DMT.png" class="game-img" /></p>
         <p>DMC <img src="../assets/DMC.png" class="game-img" /></p>
         <p>DME <img src="../assets/DME.png" class="game-img" /></p>
-      </div>
-      <div class="daily-info">
+      </div> -->
+      <div class="daily-div">
         <label class="daily-title">Daily Cost/Mine:</label>
         <p
           :class="
@@ -46,34 +76,42 @@
               : 'daily-info-neg'
           "
         >
-          {{ ((user.production["DMT"] - user.cost["DMT"]).toFixed(4) * 24).toFixed(4) }} DMT
+          {{
+            (
+              (user.production["DMT"] - user.cost["DMT"]).toFixed(4) * 24
+            ).toFixed(4)
+          }}
+          DMT <img src="../assets/DMT.png" class="game-img" />
         </p>
-        <p :class="
+        <p
+          :class="
             (user.production['DMC'] - user.cost['DMC']).toFixed(4) * 24 > 0
               ? 'daily-info-pos'
               : 'daily-info-neg'
-          ">
-          {{ ((user.production["DMC"] - user.cost["DMC"]).toFixed(4) * 24).toFixed(4) }} DMC
+          "
+        >
+          {{
+            (
+              (user.production["DMC"] - user.cost["DMC"]).toFixed(4) * 24
+            ).toFixed(4)
+          }}
+          DMC <img src="../assets/DMC.png" class="game-img" />
         </p>
-        <p :class="
+        <p
+          :class="
             (user.production['DME'] - user.cost['DME']).toFixed(4) * 24 > 0
               ? 'daily-info-pos'
               : 'daily-info-neg'
-          ">
-          {{ ((user.production["DME"] - user.cost["DME"]) * 24).toFixed(4) }} DME
+          "
+        >
+          {{
+            ((user.production["DME"] - user.cost["DME"]) * 24).toFixed(4)
+          }}
+          DME <img src="../assets/DME.png" class="game-img" />
         </p>
       </div>
     </div>
-    <div class="energy-profit">
-      <div class="energy">
-        <label class="energy-title">Energy:</label
-        ><label :class="user.energy > 250000 ? 'energy-value cpu-low' : user.energy > 100000 ? 'energy-value cpu-mid' : 'energy-value cpu-high'">{{user.energy}}/500000</label>
-      </div>
-      <div class="profit">
-        <label class="profit-title">Daily Profit:</label
-        ><label class="energy-value cpu-low">17 ￦</label>
-      </div>
-    </div>
+
     <div class="items" v-if="this.$store.state.user.items['rigs'].length">
       <ItemClaim
         title="Rigs"
@@ -94,7 +132,7 @@
         }"
       />
     </div>
-    <div class="items" v-if="this.$store.state.user.items['workshops'].length" >
+    <div class="items" v-if="this.$store.state.user.items['workshops'].length">
       <ItemClaim
         title="Workshops"
         logo="/_nuxt/img/DMC.6f40dd0.png"
@@ -114,7 +152,10 @@
         }"
       />
     </div>
-    <div class="items" v-if="this.$store.state.user.items['elecsources'].length">
+    <div
+      class="items"
+      v-if="this.$store.state.user.items['elecsources'].length"
+    >
       <ItemClaim
         title="Electricity"
         logo="/_nuxt/img/DME.cab925c.png"
@@ -140,8 +181,9 @@
 <script>
 import ItemClaim from "./ItemClaim.vue";
 import Buffer from "./Buffer.vue";
+import DefiLogo from "../../defiminingscript/components/DefiLogo.vue";
 
-const getRandomValues = require('get-random-values')
+const getRandomValues = require("get-random-values");
 
 export default {
   name: "Test",
@@ -150,25 +192,40 @@ export default {
       return this.$store.state.user;
     },
   },
-  components: { ItemClaim, Buffer },
+  components: { ItemClaim, Buffer, DefiLogo },
 };
 </script>
 
 <style>
 .info-user {
-  display: flex;
-  justify-content: space-around;
-  width: 50%;
   margin-left: 25%;
+  margin-right: 25%;
   border: 1px solid rgba(128, 128, 128, 0.363);
 }
 
+.logo-top {
+  display: inline-block;
+  width: 10%;
+  vertical-align: top;
+}
+
+.wax-info {
+  display: inline-block;
+  text-align: left;
+  width: 20%;
+  vertical-align: top;
+}
+
 .login {
+  display: inline-block;
+  width: 15%;
+  margin-left: 2%;
+  vertical-align: top;
+}
+.login-value {
   background-color: rgb(133, 40, 128);
-  height: 100%;
   padding: 0.5em;
   border-radius: 5%;
-  margin-top: 1%;
 }
 
 .wax-value {
@@ -201,6 +258,24 @@ export default {
 
 .cpu-low {
   background-color: #28a745;
+}
+
+.token-div {
+  display: inline-block;
+  font-size: small;
+}
+.ingame-div {
+  display:inline-block;
+  font-size: small;
+  margin-right: 1%;
+}
+.token-logo-div {
+  display: inline-block;
+  font-size: small;
+}
+.daily-div {
+  display: inline-block;
+  font-size: small;
 }
 /************************/
 
@@ -249,7 +324,7 @@ export default {
 }
 
 .game-img {
-  height: 25px;
+  height: 15px;
 }
 
 .daily-info {
@@ -275,11 +350,9 @@ export default {
 }
 
 .energy-profit {
-  display: flex;
-  justify-content: space-around;
-  width: 50%;
-  margin-left: 25%;
-  border: 1px solid rgba(128, 128, 128, 0.363);
+  display: inline-block;
+  vertical-align: top;
+  width: 25%;
 }
 
 .energy,

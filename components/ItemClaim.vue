@@ -11,6 +11,7 @@
       <div class="item-claim" v-for="(item, i) in list" :key="i">
         <label class="item-name">{{ item.name.slice(toTrim) }}</label>
         <CounterV2
+        ref="counter"
           class="counter-div"
           :item="item"
           :timestamp="item.claim_time"
@@ -70,6 +71,21 @@ export default {
     claimInfo: Object,
   },
   components: { CounterV2, LocalAutoClaimButton },
+  mounted() {
+    this.$root.$on(`claiming`, (id) => {
+      console.log("itemclaim receive claiming from ", id)
+      this.$refs.counter.$emit(`${id}.claiming`)
+    })
+    this.$root.$on(`success`, (id) => {
+      console.log("itemclaim receive success from ", id)
+      this.$refs.counter.$emit(`${id}.success`)
+    })
+
+    this.$root.$on(`retry`, (transac) => {
+      console.log("itemclaim receive retry from ", transac.id)
+      this.$refs.CounterV2.$emit(`${transac.id}.retry`, transac.retry)
+    })
+  },
 };
 </script>
 

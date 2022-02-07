@@ -69,16 +69,19 @@ export default {
   },
   mounted() {
     this.showRemaining();
-    this.$root.$on(`${this.item.asset_id}.claiming`, () => {
+     this.$root.$on(`${this.item.asset_id}.claiming`, () => {
+       console.log("received claiming!")
       this.msg = "Claiming...";
-    })
+    });
     this.$root.$on(`${this.item.asset_id}.success`, () => {
+      console.log("received success!")
       this.msg = "Ready to claim";
       this.readyToClaim = false;
-    })
+    });
     this.$root.$on(`${this.item.asset_id}.retry`, (nb) => {
+      console.log("received retry!")
       this.msg = `Retry to claim/repair... (${nb})`;
-    })
+    });
   },
   methods: {
     /*test() {
@@ -137,6 +140,7 @@ export default {
                 action: r_action,
                 block: r_block,
               };
+              console.log("add to repair")
               this.$store.commit("user/addRAction", r_transac);
             }
           }
@@ -174,7 +178,7 @@ export default {
       )
         return;
       try {
-        this.readyToClaim = false;
+        this.readyToClaim = true;
         const data =
           this.claiminfo.action == "claimdmc"
             ? { username: this.$store.state.user.name }
@@ -204,6 +208,7 @@ export default {
           action: action,
           block: block,
         };
+        console.log("add to queue")
         this.$store.commit("user/addAction", transac);
         this.msg = "Claim in queue..."
         if (

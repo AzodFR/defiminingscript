@@ -41,7 +41,7 @@ await fetch("https://chain.wax.io/v1/chain/get_account", {
     "mode": "cors"
 }).then((x) => x.json())
         .then(async (rows) => {
-          this.$store.commit("user/setStake", rows.total_resources.cpu_weight.split(" ")[0]);
+          this.$store.commit("user/setStake", parseFloat(rows.total_resources.cpu_weight.split(" ")[0]).toFixed(2));
           this.$store.commit("user/setCPU", (rows.cpu_limit.used * 100 / rows.cpu_limit.max).toFixed(0));
         })
     },
