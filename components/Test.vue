@@ -181,7 +181,7 @@
 <script>
 import ItemClaim from "./ItemClaim.vue";
 import Buffer from "./Buffer.vue";
-import DefiLogo from "../../defiminingscript/components/DefiLogo.vue";
+import DefiLogo from "./DefiLogo.vue";
 
 const getRandomValues = require("get-random-values");
 
