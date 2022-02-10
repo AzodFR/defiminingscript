@@ -193,7 +193,8 @@ export default {
   name: "Test",
   data() {
     return {
-      autologin: false
+      autologin: false,
+      refresh: null
     }
   },
   computed: {
@@ -206,15 +207,23 @@ export default {
     switchLog: function(){
       this.autologin = !this.autologin
       localStorage.setItem("autoLogin", this.autologin);
+      if (this.autologin) {
+        this.refresh = setTimeout(() => {
+        window.location.href = "/"
+      }, 1800000);
+      }
+      else {
+        clearTimeout(this.refresh);
+      }
     }
   },
   mounted() {
-    setTimeout(() => {
-      window.location.href = "/"
-    }, 1800000);
     if (localStorage.getItem("autoLogin") && localStorage.getItem("autoLogin") == "true")
     {
       this.autologin = true;
+      this.refresh = setTimeout(() => {
+        window.location.href = "/"
+      }, 1800000);
     }
     this.$on(`test`, (id) => {
       console.log("main receive test from ", id);
