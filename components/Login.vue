@@ -50,6 +50,12 @@ export default {
       }, 1000);
     },
   },
+  mounted() {
+    if (localStorage.getItem("autoLogin") && localStorage.getItem("autoLogin") == "true")
+    {
+      this.login();
+    }
+  },
 };
 </script>
 

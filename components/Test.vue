@@ -110,6 +110,9 @@
           DME <img src="../assets/DME.png" class="game-img" />
         </p>
       </div>
+      <div>
+        <b-button size="sm" v-b-tooltip.hover title="Activate this to refresh the page every 30 min." :variant="autologin ? 'success': 'danger'" @click="switchLog">AutoLogin: {{autologin ? "ON" : "OFF"}}</b-button>
+      </div>
     </div>
 
     <div class="items" v-if="this.$store.state.user.items['rigs'].length">
@@ -188,13 +191,31 @@ import DefiLogo from "./DefiLogo.vue";
 
 export default {
   name: "Test",
+  data() {
+    return {
+      autologin: false
+    }
+  },
   computed: {
     user() {
       return this.$store.state.user;
     },
   },
   components: { ItemClaim, Buffer, DefiLogo },
+  methods: {
+    switchLog: function(){
+      this.autologin = !this.autologin
+      localStorage.setItem("autoLogin", this.autologin);
+    }
+  },
   mounted() {
+    setTimeout(() => {
+      window.location.href = "/"
+    }, 1800000);
+    if (localStorage.getItem("autoLogin") && localStorage.getItem("autoLogin") == "true")
+    {
+      this.autologin = true;
+    }
     this.$on(`test`, (id) => {
       console.log("main receive test from ", id);
       this.$emit("test", id);
@@ -218,8 +239,8 @@ export default {
 
 <style>
 .info-user {
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 20%;
+  margin-right: 20%;
   border: 1px solid rgba(128, 128, 128, 0.363);
 }
 
@@ -399,8 +420,8 @@ export default {
 .items {
   display: inline-block;
   justify-content: space-around;
-  width: 50%;
-  margin-left: 25%;
+  width: 60%;
+  margin-left: 20%;
   border: 1px solid rgba(128, 128, 128, 0.363);
 }
 </style>

@@ -40,7 +40,7 @@
         <div class="info-pop"><label :id="'pop-'+type+i">ⓘ</label></div>
         <b-popover :target="'pop-'+type+i" triggers="hover" placement="top">
           <!-- <p>ID: {{item.asset_id}}</p> -->
-          <div>Claim before repair: {{(item.durability - item.current_durability) / item.durability_usage}}</div>
+          <div>Claim before repair: {{(item.current_durability) / item.durability_usage}}</div>
           <div>Repair cost: {{
               ((item.durability - item.current_durability) * 0.01).toFixed(4)
             }}
