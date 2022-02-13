@@ -12,7 +12,7 @@
         <span class="dev1"> Azod#9999 (vzfjg.wam) </span>
         &&
         <span class="dev2"> HME#1240 (43xts.wam) </span>
-        (v2.5.2)
+        (v2.5.3)
       </p>
     </div>
   </div>

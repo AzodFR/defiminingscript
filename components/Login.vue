@@ -38,6 +38,7 @@ export default {
   methods: {
     login: async function () {
       this.wait = true;
+      localStorage.setItem("rpc", this.selected)
       await this.$store.commit("user/login", this.selected);
       const wax = this.$store.state.user.wax;
       //console.log(wax);
@@ -51,6 +52,9 @@ export default {
     },
   },
   mounted() {
+     if (localStorage.getItem("rpc")) {
+       this.selected = localStorage.getItem("rpc");
+     }
     if (localStorage.getItem("autoLogin") && localStorage.getItem("autoLogin") == "true")
     {
       this.login();
