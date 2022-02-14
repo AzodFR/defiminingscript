@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="test">
     <Buffer ref="buffer" />
     <div class="info-user">
       <DefiLogo class="logo-top" />
@@ -48,7 +48,7 @@
         </div>
         <div class="profit">
           <label class="profit-title">Daily Profit:</label
-          ><label class="energy-value cpu-low">17 ￦</label>
+          ><label class="energy-value cpu-low">?? ￦</label>
         </div>
       </div>
       <div class="token-div">
@@ -247,6 +247,11 @@ export default {
 </script>
 
 <style>
+
+.test {
+  margin-top: 2.5%;
+}
+
 .info-user {
   margin-left: 20%;
   margin-right: 20%;

@@ -1,12 +1,6 @@
 <template>
   <div>
-    <DefiLogo v-if="name == ''"/>
-    <Login v-if="name == ''" />
-    <div v-else>
-      <Interval />
-      <Test />
-    </div>
-    <div class="devinfo">
+     <div class="devinfo">
       <p class="txt">
         Created by
         <span class="dev1"> Azod#9999 (vzfjg.wam) </span>
@@ -14,6 +8,12 @@
         <span class="dev2"> HME#1240 (43xts.wam) </span>
         (v2.5.3)
       </p>
+    </div>
+    <DefiLogo v-if="name == ''"/>
+    <Login v-if="name == ''" />
+    <div v-else>
+      <Interval />
+      <Test />
     </div>
   </div>
 </template>
@@ -51,8 +51,11 @@ body {
 
 .devinfo {
   position: fixed;
-  bottom: 0;
-  text-align: left;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  background-color: rgba(58, 58, 58, 0.096);
 }
 .txt {
   text-align: left;
